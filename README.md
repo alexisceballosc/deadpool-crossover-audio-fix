@@ -1,79 +1,63 @@
-# Deadpool (2013) - Audio Echo Fix under Wine/CrossOver
+# Deadpool (2013): Audio Fix for Wine/CrossOver
 
-**Environment:** macOS (Apple Silicon, Rosetta 2) · CrossOver 26.2 · July 2026
+**Environment:** macOS (Apple Silicon, Rosetta 2) · CrossOver 26.2
 
 ## What it fixes
 
-Under Wine/CrossOver on Mac, all in-game audio (footsteps, gunshots, dialogue, ambience)
-plays with echoes/out-of-sync copies that don't exist on native Windows. This fix
-eliminates them completely while preserving the game's original audio effects.
+Under Wine/CrossOver on Mac, Deadpool's audio breaks in ways it does not on native Windows. Two separate bugs:
+
+**1. Every sound trails copies of itself.** Footsteps, gunshots, dialogue, ambience, all of it echoing.
+
+**2. Bursts of noise, saturation and reverb-like smearing,** arriving together and worse the busier the scene gets.
+
+Both are fixed, the game keeps all of its sound effects, and it no longer stalls to a few frames per second while loading (see [The cache](#the-cache)).
+
+> [!IMPORTANT]
+> Works over the original game files of [Deadpool](https://archive.org/details/Deadpool-LivBs).
 
 ## How to apply
-
-> [!IMPORTANT]  
-> This fix works over the original game files of [Deadpool](https://archive.org/details/Deadpool-LivBs) game
 
 1. Go to `<game>\Binaries\` (where `DP.exe` is).
 2. Rename the original `fmodex.dll` to `fmodex_og.dll`.
 3. Copy this package's `fmodex.dll` next to it.
 
-*(Or just drag n drop both files in and choose overwrite)*
-
-> [!WARNING]  
-> Loads get noticeably longer (~2 min on startup, ~30 s per loading screen). This is the cost of the fix.
+*(Or just drag both files in and choose overwrite.)*
 
 **Uninstall:** delete `fmodex.dll`, rename `fmodex_og.dll` back.
 
 ## How it works
 
-The game loads its ~1868 sound effects as MPEG *compressed samples*
-(`FMOD_CREATECOMPRESSEDSAMPLE`): FMOD decodes them on the fly each time a voice
-plays, with a pool of 64 shared decoders. Under CPU translation (Rosetta), that
-realtime decode (block seeking + codec state swapping between voices) can't keep
-up in time and FMOD repeats already-decoded blocks → every sound leaves
-out-of-sync copies of itself = the echoes.
+A proxy `fmodex.dll` sits between the game and the real FMOD (`fmodex_og.dll`): it forwards 693 of the 698 exports untouched and intercepts five. Both bugs are FMOD's, and each fix lives in one of those five.
 
-The fix is a **proxy** `fmodex.dll`: it forwards all 698 exports to the real FMOD
-(`fmodex_og.dll`) and intercepts only `System::createSound`, replacing the
-`FMOD_CREATECOMPRESSEDSAMPLE (0x200)` flag with `FMOD_CREATESAMPLE (0x100)` → each
-sound is decoded to PCM once at load time (a sequential path, no deadline, that
-works fine). The realtime decode disappears, and with it, the echoes.
-This is also what explains the slow loads.
+**Bug 1, the echoes.** FMOD decoded the compressed audio in realtime, on every play. Under Rosetta that decode misses its deadline, so FMOD reuses blocks it already decoded and every sound trails copies of itself. The proxy has each sound decode to PCM once, at load, so there is no realtime decode left to fall behind.
 
-## Build by yourself
+**Bug 2, the noise.** The mixer was running at 113% of realtime, unable to produce audio as fast as it was consumed, so it dropped and repeated blocks. Two thirds of that load was seven echo, reverb and flange effects, five of them left connected while turned down to silence, because FMOD charges full price for an effect no matter how quiet it is. The proxy removes any effect that has gone silent and restores it the instant the game makes it audible. Every effect the game uses still plays.
 
-Requires mingw-w64 (macOS via Homebrew: `brew install mingw-w64`).
+## The cache
+
+Decoding at load is the slow part under Rosetta, and left alone it would be paid on every launch. Instead the proxy writes each decoded sound to `Binaries\audio_cache\` the first time you hear it, and reads it back from there on every launch after. The first visit to an area costs what it always did; from then on it is instant, this session and every future one. Nothing to run, the cache fills itself as you play.
+
+> [!TIP]
+> **Don't delete `audio_cache\`.** A cache grown across a full playthrough is a complete, pre-decoded copy of the game's audio, and the basis for a build that never decodes at all.
+
+The proxy also keeps the raw compressed bank (`.src`) beside each entry. You never need these, but to decode the whole set at once instead of playing through it, run `tools/decode_cache.py` (needs ffmpeg, `brew install ffmpeg`):
+
+```sh
+python3 tools/decode_cache.py "<game>/Binaries/audio_cache"
+```
+
+## Build
+
+Requires mingw-w64 (`brew install mingw-w64`).
 
 ```sh
 cd src
-python3 gen_def/gen_def.py   # reads gen_def/exports.txt, writes src/proxy.def
+python3 gen_def/gen_def.py
 i686-w64-mingw32-gcc -O2 -Wall -shared -static-libgcc -o fmodex.dll proxy.c proxy.def
 ```
 
-## Dead ends
+**32-bit (`i686`) is mandatory**: the game is a 32-bit process.
 
-Investigated and ruled out with evidence (don't repeat these):
+---
 
-| Hypothesis | Test | Verdict |
-|---|---|---|
-| Wine WASAPI output (cursor timing) | Force DSOUND / WINMM | ✗ DSOUND worse (loops), WINMM same |
-| Speaker/surround mode misdetected | Log `getDriverCaps`/`setSpeakerMode` | ✗ Stereo correct throughout the chain |
-| Wine audio backend (`winecoreaudio`) | Minimal WASAPI repro in the bottle | ✗ Clean playback; also the only backend on Mac |
-| Underruns replaying old data | Repro with forced 120 ms stalls | ✗ Produces clicks/cuts, never echoes |
-| Broken clocks (QPC/timeGetTime under Rosetta) | Measured them in the bottle | ✗ Accurate |
-| Voice starvation → relaunches (too few playback slots) | Force 512 channels / 256 software voices | ✗ No change |
-| Same sound retriggering | Dedup `playSound` by Sound* (150 ms soft, 1200 ms hard) | ✗ Echoes intact |
-| Insufficient MPEG codec pool (shared decoders) | maxMPEGcodecs 64→256 | ✗ `FMOD_ERR_MEMORY`, dead audio (32-bit process) |
-| Bug fixed in a newer FMOD | FMOD Ex 4.44.64 (2016) | ✗ Identical echoes - it's Rosetta timing, not an FMOD bug |
-| Block all DSP processing | Blocked `ChannelGroup::addDSP` entirely | ✗ Kills intentional DSPs too (voice radio filter, environment reverb) - degrades audio, barely mitigates echo |
-
-**The turning point:** capturing FMOD's output to WAV *before* it reached Wine
-(via WAVWRITER) showed the echo was already in the mix. That ruled out Wine and
-CoreAudio entirely and pointed straight at FMOD's realtime decode path. The fix
-in "How it works" above.
-
-## Known traps
-
-- The game checks `getVersion` == 4.36.02; a different FMOD version
-  **silently disables audio**. 4.44.64 also changes the ABI of
-  `DSPConnection::setMix` (two floats → one), which would need a bridge in the proxy.
+**[TECHNICAL.md](TECHNICAL.md)** covers the measurements behind both fixes, how the game drives FMOD, the dead ends already ruled out, and the traps to know before touching the code. Read it first: most of the obvious ideas have been tried and disproved with data.

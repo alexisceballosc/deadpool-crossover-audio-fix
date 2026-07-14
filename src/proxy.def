@@ -15,7 +15,7 @@ EXPORTS
     "?createCodec@System@FMOD@@QAG?AW4FMOD_RESULT@@PAUFMOD_CODEC_DESCRIPTION@@I@Z" = "fmodex_og.?createCodec@System@FMOD@@QAG?AW4FMOD_RESULT@@PAUFMOD_CODEC_DESCRIPTION@@I@Z"
     "?createDSP@System@FMOD@@QAG?AW4FMOD_RESULT@@PAUFMOD_DSP_DESCRIPTION@@PAPAVDSP@2@@Z" = "fmodex_og.?createDSP@System@FMOD@@QAG?AW4FMOD_RESULT@@PAUFMOD_DSP_DESCRIPTION@@PAPAVDSP@2@@Z"
     "?createDSPByPlugin@System@FMOD@@QAG?AW4FMOD_RESULT@@IPAPAVDSP@2@@Z" = "fmodex_og.?createDSPByPlugin@System@FMOD@@QAG?AW4FMOD_RESULT@@IPAPAVDSP@2@@Z"
-    "?createDSPByType@System@FMOD@@QAG?AW4FMOD_RESULT@@W4FMOD_DSP_TYPE@@PAPAVDSP@2@@Z" = "fmodex_og.?createDSPByType@System@FMOD@@QAG?AW4FMOD_RESULT@@W4FMOD_DSP_TYPE@@PAPAVDSP@2@@Z"
+    "?createDSPByType@System@FMOD@@QAG?AW4FMOD_RESULT@@W4FMOD_DSP_TYPE@@PAPAVDSP@2@@Z" = hook_System_createDSPByType
     "?createGeometry@System@FMOD@@QAG?AW4FMOD_RESULT@@HHPAPAVGeometry@2@@Z" = "fmodex_og.?createGeometry@System@FMOD@@QAG?AW4FMOD_RESULT@@HHPAPAVGeometry@2@@Z"
     "?createReverb@System@FMOD@@QAG?AW4FMOD_RESULT@@PAPAVReverb@2@@Z" = "fmodex_og.?createReverb@System@FMOD@@QAG?AW4FMOD_RESULT@@PAPAVReverb@2@@Z"
     "?createSound@System@FMOD@@QAG?AW4FMOD_RESULT@@PBDIPAUFMOD_CREATESOUNDEXINFO@@PAPAVSound@2@@Z" = hook_System_createSound
@@ -209,7 +209,7 @@ EXPORTS
     "?getWaveData@Channel@FMOD@@QAG?AW4FMOD_RESULT@@PAMHH@Z" = "fmodex_og.?getWaveData@Channel@FMOD@@QAG?AW4FMOD_RESULT@@PAMHH@Z"
     "?getWaveData@ChannelGroup@FMOD@@QAG?AW4FMOD_RESULT@@PAMHH@Z" = "fmodex_og.?getWaveData@ChannelGroup@FMOD@@QAG?AW4FMOD_RESULT@@PAMHH@Z"
     "?getWaveData@System@FMOD@@QAG?AW4FMOD_RESULT@@PAMHH@Z" = "fmodex_og.?getWaveData@System@FMOD@@QAG?AW4FMOD_RESULT@@PAMHH@Z"
-    "?init@System@FMOD@@QAG?AW4FMOD_RESULT@@HIPAX@Z" = "fmodex_og.?init@System@FMOD@@QAG?AW4FMOD_RESULT@@HIPAX@Z"
+    "?init@System@FMOD@@QAG?AW4FMOD_RESULT@@HIPAX@Z" = hook_System_init
     "?isPlaying@Channel@FMOD@@QAG?AW4FMOD_RESULT@@PA_N@Z" = "fmodex_og.?isPlaying@Channel@FMOD@@QAG?AW4FMOD_RESULT@@PA_N@Z"
     "?isRecording@System@FMOD@@QAG?AW4FMOD_RESULT@@HPA_N@Z" = "fmodex_og.?isRecording@System@FMOD@@QAG?AW4FMOD_RESULT@@HPA_N@Z"
     "?isVirtual@Channel@FMOD@@QAG?AW4FMOD_RESULT@@PA_N@Z" = "fmodex_og.?isVirtual@Channel@FMOD@@QAG?AW4FMOD_RESULT@@PA_N@Z"
@@ -264,7 +264,7 @@ EXPORTS
     "?setActive@Geometry@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z" = "fmodex_og.?setActive@Geometry@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z"
     "?setActive@Reverb@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z" = "fmodex_og.?setActive@Reverb@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z"
     "?setAdvancedSettings@System@FMOD@@QAG?AW4FMOD_RESULT@@PAUFMOD_ADVANCEDSETTINGS@@@Z" = "fmodex_og.?setAdvancedSettings@System@FMOD@@QAG?AW4FMOD_RESULT@@PAUFMOD_ADVANCEDSETTINGS@@@Z"
-    "?setBypass@DSP@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z" = "fmodex_og.?setBypass@DSP@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z"
+    "?setBypass@DSP@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z" = hook_DSP_setBypass
     "?setCallback@Channel@FMOD@@QAG?AW4FMOD_RESULT@@P6G?AW43@PAUFMOD_CHANNEL@@W4FMOD_CHANNEL_CALLBACKTYPE@@PAX2@Z@Z" = "fmodex_og.?setCallback@Channel@FMOD@@QAG?AW4FMOD_RESULT@@P6G?AW43@PAUFMOD_CHANNEL@@W4FMOD_CHANNEL_CALLBACKTYPE@@PAX2@Z@Z"
     "?setCallback@System@FMOD@@QAG?AW4FMOD_RESULT@@P6G?AW43@PAUFMOD_SYSTEM@@W4FMOD_SYSTEM_CALLBACKTYPE@@PAX2@Z@Z" = "fmodex_og.?setCallback@System@FMOD@@QAG?AW4FMOD_RESULT@@P6G?AW43@PAUFMOD_SYSTEM@@W4FMOD_SYSTEM_CALLBACKTYPE@@PAX2@Z@Z"
     "?setChannelGroup@Channel@FMOD@@QAG?AW4FMOD_RESULT@@PAVChannelGroup@2@@Z" = "fmodex_og.?setChannelGroup@Channel@FMOD@@QAG?AW4FMOD_RESULT@@PAVChannelGroup@2@@Z"
@@ -299,7 +299,7 @@ EXPORTS
     "?setOutput@System@FMOD@@QAG?AW4FMOD_RESULT@@W4FMOD_OUTPUTTYPE@@@Z" = "fmodex_og.?setOutput@System@FMOD@@QAG?AW4FMOD_RESULT@@W4FMOD_OUTPUTTYPE@@@Z"
     "?setOutputByPlugin@System@FMOD@@QAG?AW4FMOD_RESULT@@I@Z" = "fmodex_og.?setOutputByPlugin@System@FMOD@@QAG?AW4FMOD_RESULT@@I@Z"
     "?setPan@Channel@FMOD@@QAG?AW4FMOD_RESULT@@M@Z" = "fmodex_og.?setPan@Channel@FMOD@@QAG?AW4FMOD_RESULT@@M@Z"
-    "?setParameter@DSP@FMOD@@QAG?AW4FMOD_RESULT@@HM@Z" = "fmodex_og.?setParameter@DSP@FMOD@@QAG?AW4FMOD_RESULT@@HM@Z"
+    "?setParameter@DSP@FMOD@@QAG?AW4FMOD_RESULT@@HM@Z" = hook_DSP_setParameter
     "?setPaused@Channel@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z" = "fmodex_og.?setPaused@Channel@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z"
     "?setPaused@ChannelGroup@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z" = "fmodex_og.?setPaused@ChannelGroup@FMOD@@QAG?AW4FMOD_RESULT@@_N@Z"
     "?setPitch@ChannelGroup@FMOD@@QAG?AW4FMOD_RESULT@@M@Z" = "fmodex_og.?setPitch@ChannelGroup@FMOD@@QAG?AW4FMOD_RESULT@@M@Z"
