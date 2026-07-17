@@ -19,11 +19,15 @@ Both are fixed, the game keeps all of its sound effects, and it no longer stalls
 
 1. Go to `<game>\Binaries\` (where `DP.exe` is).
 2. Rename the original `fmodex.dll` to `fmodex_og.dll`.
-3. Copy this package's `fmodex.dll` next to it.
+3. Copy the fix's `fmodex.dll` (from `dist/Deadpool/Binaries/`) next to it.
 
 *(Or just drag both files in and choose overwrite.)*
 
 **Uninstall:** delete `fmodex.dll`, rename `fmodex_og.dll` back.
+
+### Or let the scripts do it
+
+If you don't have the game yet, three scripts in [`scripts/`](scripts/README.md) handle everything under `dist/`: `download.command` fetches the game, `install.command` unzips it, and `gen-fix.command` builds the proxy and applies it into `dist/Deadpool/Binaries/` for you. Each runs on its own or all in order.
 
 ## How it works
 
@@ -43,12 +47,12 @@ Decoding at load is the slow part under Rosetta, and left alone it would be paid
 The proxy also keeps the raw compressed bank (`.src`) beside each entry. You never need these, but to decode the whole set at once instead of playing through it, run `tools/decode_cache.py` (needs ffmpeg, `brew install ffmpeg`):
 
 ```sh
-python3 tools/decode_cache.py "<game>/Binaries/audio_cache"
+python3 tools/decode_cache.py "dist/Deadpool/Binaries/audio_cache"
 ```
 
 ## Build
 
-Requires mingw-w64 (`brew install mingw-w64`).
+`scripts/gen-fix.command` builds and installs the proxy in one step (needs mingw-w64, `brew install mingw-w64`). By hand:
 
 ```sh
 cd src

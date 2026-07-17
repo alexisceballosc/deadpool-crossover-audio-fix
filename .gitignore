@@ -1,4 +1,11 @@
-misc
-!misc/download-deadpool.command
+# Ignore dist/ except the built fmodex.dll.
 
-Binaries/fmodex_og.dll
+!/dist/
+/dist/*
+!/dist/Deadpool/
+/dist/Deadpool/*
+!/dist/Deadpool/Binaries/
+/dist/Deadpool/Binaries/*
+!/dist/Deadpool/Binaries/fmodex.dll
+
+.DS_Store
